@@ -77,14 +77,14 @@ export default function Login({ onLoginSuccess }) {
                 type="text"
                 className="form-control form-control-lg border-2"
                 id="codigo"
-                placeholder="Ej: T-0533 o GE-0924"
+                placeholder="Ej: T-0000 o GE-0000"
                 value={codigo}
                 onChange={(e) => setCodigo(e.target.value.toUpperCase())}
                 disabled={loading}
                 autoFocus
               />
               <small className="text-muted d-block mt-2">
-                ℹ️ Escribe el código que aparece en tu carné
+               
               </small>
             </div>
 
@@ -127,9 +127,9 @@ export default function Login({ onLoginSuccess }) {
 
           {/* INFORMACIÓN ADICIONAL */}
           <p className="text-center text-muted small mb-0">
-            <strong>🔒 Seguridad:</strong> Este portal es de solo lectura.
+            <strong>🔒 Seguridad:</strong> Google Authenticator 
             <br />
-            Tus calificaciones se actualizan automáticamente.
+            
           </p>
         </div>
       </div>
