@@ -55,10 +55,11 @@ export default function Login({ onLoginSuccess }) {
 
   return (
     <div
-      className="min-vh-100 d-flex align-items-center justify-content-center"
+      // 🔥 FIX: Se agregó 'w-100' para obligar a ocupar todo el ancho del #root
+      className="min-vh-100 w-100 d-flex align-items-center justify-content-center"
       style={{ backgroundColor: "#f0f2f5" }}
     >
-      <div className="card shadow-lg" style={{ maxWidth: "450px", width: "100%" }}>
+      <div className="card shadow-lg" style={{ maxWidth: "450px", width: "100%", margin: "0 auto" }}>
         <div className="card-body p-5">
           {/* LOGO Y TÍTULO */}
           <div className="text-center mb-4">
@@ -83,9 +84,6 @@ export default function Login({ onLoginSuccess }) {
                 disabled={loading}
                 autoFocus
               />
-              <small className="text-muted d-block mt-2">
-               
-              </small>
             </div>
 
             {/* MENSAJE DE ERROR */}
@@ -129,7 +127,6 @@ export default function Login({ onLoginSuccess }) {
           <p className="text-center text-muted small mb-0">
             <strong>🔒 Seguridad:</strong> Google Authenticator 
             <br />
-            
           </p>
         </div>
       </div>
