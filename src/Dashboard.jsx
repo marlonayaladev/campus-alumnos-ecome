@@ -236,6 +236,11 @@ notasSnapshot.forEach((d) => {
   notasMapTemp[data.cursoId] = data;  // ← el fix
 });
 
+// TEMPORAL - borrar después
+console.log("notasMap:", notasMapTemp);
+console.log("cursosVinculados:", usuario.cursosVinculados);
+console.log("cursos cargados:", cursosData.map(c => c.id));
+
 setCursos(cursosData);
 setDocentesMap(docentesTemp);
 setNotasMap(notasMapTemp);
