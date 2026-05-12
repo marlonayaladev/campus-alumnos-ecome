@@ -229,9 +229,10 @@ useEffect(() => {
         collection(db, "notas"),
         where("alumnoId", "==", usuario.id)
       );
-      const notasSnapshot = await getDocs(notasQuery);
-      const notasMapTemp = {};
-      notasSnapshot.forEach((d) => { notasMapTemp[d.id] = d.data(); });
+      notasSnapshot.forEach((d) => {
+          const data = d.data();
+          notasMapTemp[data.cursoId] = data;  // indexar por cursoId
+        });
 
       setCursos(cursosData);
       setDocentesMap(docentesTemp);
@@ -353,8 +354,7 @@ useEffect(() => {
             ) : (
               <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
                 {cursos.map((curso) => {
-                  const notasKey = `${usuario.id}_${curso.id}`;
-                  const notasCurso = notasMap[notasKey] || {};
+                  const notasCurso = notasMap[curso.id] || {};
                   const docenteNombre = docentesMap[curso.docente_id] || "No asignado";
 
                   return (
