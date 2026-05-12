@@ -226,17 +226,19 @@ useEffect(() => {
       }
 
       const notasQuery = query(
-        collection(db, "notas"),
-        where("alumnoId", "==", usuario.id)
-      );
-      notasSnapshot.forEach((d) => {
-          const data = d.data();
-          notasMapTemp[data.cursoId] = data;  // indexar por cursoId
-        });
+  collection(db, "notas"),
+  where("alumnoId", "==", usuario.id)
+);
+const notasSnapshot = await getDocs(notasQuery);
+const notasMapTemp = {};
+notasSnapshot.forEach((d) => {
+  const data = d.data();
+  notasMapTemp[data.cursoId] = data;  // ← el fix
+});
 
-      setCursos(cursosData);
-      setDocentesMap(docentesTemp);
-      setNotasMap(notasMapTemp);
+setCursos(cursosData);
+setDocentesMap(docentesTemp);
+setNotasMap(notasMapTemp);
       setError("");
     } catch (err) {
       setError("Error al cargar datos: " + err.message);
