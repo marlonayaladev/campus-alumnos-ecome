@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
 import { db } from "./firebase";
 import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 // Importamos los iconos mágicos de Lucide
@@ -185,56 +188,65 @@ export default function Dashboard({ usuario, onLogout }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Lógica original de Firebase
-  useEffect(() => {
-    const cargarDatos = async () => {
-      try {
-        setLoading(true);
-        const cursosVinculados = usuario.cursosVinculados || [];
+  // Reemplaza el useEffect completo por este:
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    if (!user) return; // esperar a que haya sesión activa
 
-        if (cursosVinculados.length === 0) {
-          setCursos([]);
-          setLoading(false);
-          return;
-        }
+    try {
+      setLoading(true);
+      const cursosVinculados = usuario.cursosVinculados || [];
 
-        const cursosData = [];
-        const docentesTemp = {};
+      if (cursosVinculados.length === 0) {
+        setCursos([]);
+        setLoading(false);
+        return;
+      }
 
-        for (const cursoId of cursosVinculados) {
-          const cursoDocRef = doc(db, "cursos", cursoId);
-          const cursoDoc = await getDoc(cursoDocRef);
+      const cursosData = [];
+      const docentesTemp = {};
 
-          if (cursoDoc.exists()) {
-            const cursoData = { id: cursoId, ...cursoDoc.data() };
-            cursosData.push(cursoData);
+      for (const cursoId of cursosVinculados) {
+        const cursoDocRef = doc(db, "cursos", cursoId);
+        const cursoDoc = await getDoc(cursoDocRef);
 
-            if (cursoData.docente_id) {
-              const docenteDocRef = doc(db, "usuarios", cursoData.docente_id);
-              const docenteDoc = await getDoc(docenteDocRef);
-              if (docenteDoc.exists()) docentesTemp[cursoData.docente_id] = docenteDoc.data().nombre;
+        if (cursoDoc.exists()) {
+          const cursoData = { id: cursoId, ...cursoDoc.data() };
+          cursosData.push(cursoData);
+
+          if (cursoData.docente_id) {
+            // ✅ CORRECCIÓN: buscar en "docentes", no en "usuarios"
+            const docenteDocRef = doc(db, "docentes", cursoData.docente_id);
+            const docenteDoc = await getDoc(docenteDocRef);
+            if (docenteDoc.exists()) {
+              docentesTemp[cursoData.docente_id] = docenteDoc.data().nombre;
             }
           }
         }
-
-        const notasQuery = query(collection(db, "notas"), where("alumnoId", "==", usuario.id));
-        const notasSnapshot = await getDocs(notasQuery);
-        const notasMapTemp = {};
-        notasSnapshot.forEach((doc) => { notasMapTemp[doc.id] = doc.data(); });
-
-        setCursos(cursosData);
-        setDocentesMap(docentesTemp);
-        setNotasMap(notasMapTemp);
-        setError("");
-      } catch (err) {
-        setError("Error al cargar datos: " + err.message);
-        console.error(err);
-      } finally {
-        setLoading(false);
       }
-    };
 
-    cargarDatos();
-  }, [usuario]);
+      const notasQuery = query(
+        collection(db, "notas"),
+        where("alumnoId", "==", usuario.id)
+      );
+      const notasSnapshot = await getDocs(notasQuery);
+      const notasMapTemp = {};
+      notasSnapshot.forEach((d) => { notasMapTemp[d.id] = d.data(); });
+
+      setCursos(cursosData);
+      setDocentesMap(docentesTemp);
+      setNotasMap(notasMapTemp);
+      setError("");
+    } catch (err) {
+      setError("Error al cargar datos: " + err.message);
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  return () => unsubscribe();
+}, [usuario]);
 
   if (loading) {
     return (
