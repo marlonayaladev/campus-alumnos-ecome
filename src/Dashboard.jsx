@@ -225,15 +225,22 @@ useEffect(() => {
         }
       }
 
+
+console.log("buscando notas con alumnoId:", usuario.id);
+
       const notasQuery = query(
   collection(db, "notas"),
   where("alumnoId", "==", usuario.id)
 );
+
+console.log("buscando notas con alumnoId:", usuario.id);
+
 const notasSnapshot = await getDocs(notasQuery);
 const notasMapTemp = {};
 notasSnapshot.forEach((d) => {
   const data = d.data();
-  notasMapTemp[data.cursoId] = data;  // ← el fix
+  console.log("nota encontrada:", data.cursoId, "| alumnoId:", data.alumnoId);
+  notasMapTemp[data.cursoId] = data;
 });
 
 // TEMPORAL - borrar después
