@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
+import { signInAnonymously } from "firebase/auth";   // ← NUEVO
+import { auth } from "./firebase";     
 
 export default function App() {
   const [usuario, setUsuario] = useState(null);
@@ -8,6 +10,14 @@ export default function App() {
 
   // ==================== CARGAR USUARIO DESDE LOCALSTORAGE ====================
   useEffect(() => {
+    const init = async () => {
+      // ← NUEVO: autenticar anónimamente siempre al arrancar
+      try {
+        await signInAnonymously(auth);
+      } catch (err) {
+        console.error("Error en auth anónima:", err);
+      }
+    
     const usuarioGuardado = localStorage.getItem("alumno_portal_usuario");
     
     if (usuarioGuardado) {
@@ -20,6 +30,9 @@ export default function App() {
     }
     
     setLoading(false);
+
+    };
+    init();
   }, []);
 
   // ==================== MANEJAR LOGIN ====================

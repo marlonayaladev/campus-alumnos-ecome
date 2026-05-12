@@ -1,6 +1,7 @@
+import { signInAnonymously } from "firebase/auth";
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { db } from "./firebase";
+import { db, auth } from "./firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 export default function Login({ onLoginSuccess }) {
@@ -20,6 +21,8 @@ export default function Login({ onLoginSuccess }) {
         setLoading(false);
         return;
       }
+
+      await signInAnonymously(auth);
 
       // Query a Firestore: buscar alumno por clave (convertida a mayúsculas)
       const alumnosQuery = query(
@@ -61,13 +64,16 @@ export default function Login({ onLoginSuccess }) {
     >
       <div className="card shadow-lg" style={{ maxWidth: "450px", width: "100%", margin: "0 auto" }}>
         <div className="card-body p-5">
-          {/* LOGO Y TÍTULO */}
+ {/* LOGO Y TÍTULO */}
           <div className="text-center mb-4">
-            <div style={{ fontSize: "64px", marginBottom: "16px" }}>🎓</div>
+            <img 
+              src="/logo.svg" 
+              alt="Logo ECOME" 
+              style={{ width: "180px", height: "auto", marginBottom: "16px" }} 
+            />
             <h2 className="text-primary fw-bold mb-1">ECOME</h2>
             <p className="text-muted small mb-4">Portal de Estudiantes</p>
           </div>
-
           {/* FORMULARIO */}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
